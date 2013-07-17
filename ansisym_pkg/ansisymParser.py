@@ -145,14 +145,19 @@ def t_STR_start(t):
     r'"'
     t.lexer.begin('strstate')
 
-# re == (not a ", newline, or \) or (\ followed by ")
+# re == (not a " or newline) or (\ followed by ")
 # Basically, suck up escaped " chars and anything else up to newline.
 def t_strstate_STR(t):
-    r'([^"\n\\]|(\\"))+'
+    r'([^"\n]|(\\"))+'
     return t
 
-def t_strstate_done(t):
+def t_strstate_done_q(t):
     r'"'
+    t.lexer.begin('INITIAL')
+
+def t_strstate_done_nl(t):
+    r'\n'
+    er.ror.msg('f','Unclosed string at line ' + str(t.lineno))
     t.lexer.begin('INITIAL')
 
 # Other tokens
